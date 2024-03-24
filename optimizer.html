@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NBA Odds API Request</title>
+</head>
+<body>
+  <h2>Enter Event ID:</h2>
+  <input type="text" id="eventInput" placeholder="Enter Event ID">
+  <button onclick="makeRequest()">Confirm</button>
+
+  <div id="responseContainer"></div>
+
+  <script>
+    function makeRequest() {
+      var eventID = document.getElementById('eventInput').value;
+      var apiUrl = 'https://api.the-odds-api.com/v4/sports/basketball_nba/events/' + eventID + '/odds?apiKey=728f838e9ff2e31e7c4517ad1890e66f&bookmakers=draftkings&markets=player_points,player_rebounds,player_assists,player_points_rebounds_assists,player_points_rebounds,player_points_assists,player_rebounds_assists&oddsFormat=decimal';
+      
+      // Make the API request
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          // Process the response data and format it
+          var formattedResponse = formatResponse(data);
+          
+          // Display the formatted response on the page
+          document.getElementById('responseContainer').innerHTML = formattedResponse;
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+          // Handle errors here
+        });
+    }
+
+    function formatResponse(data) {
+      var formattedHtml = '<h2>API Response:</h2>';
+      formattedHtml += '<p><strong>Event ID:</strong> ' + data.id + '</p>';
+      formattedHtml += '<p><strong>Sport:</strong> ' + data.sport_title + '</p>';
+      formattedHtml += '<p><strong>Commence Time:</strong> ' + data.commence_time + '</p>';
+      formattedHtml += '<p><strong>Home Team:</strong> ' + data.home_team + '</p>';
+      formattedHtml += '<p><strong>Away Team:</strong> ' + data.away_team + '</p>';
+      
+      // Loop through bookmakers
+      data.bookmakers.forEach(bookmaker => {
+        formattedHtml += '<h3>' + bookmaker.title + '</h3>';
+        
+        // Loop through markets
+        bookmaker.markets.forEach(market => {
+          formattedHtml += '<h4>' + market.key.replace('_', ' ').toUpperCase() + '</h4>';
+          
+          // Loop through outcomes
+          market.outcomes.forEach(outcome => {
+            formattedHtml += '<p><strong>' + outcome.name + '</strong>: ' + outcome.description + ' - ' + outcome.price + (" "+Math.round(100/outcome.price)+"%")+'</p>';
+          });
+        });
+      });
+
+      return formattedHtml;
+    }
+  </script>
+</body>
+</html>
