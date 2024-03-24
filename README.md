@@ -1,0 +1,2 @@
+# WSTBET
+Betting Odds
