@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON Request Button</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+<button id="jsonRequestButton">Make JSON Request</button>
+
+<div id="responseContainer">
+    <!-- Response will be displayed here -->
+</div>
+
+<script>
+$(document).ready(function(){
+    $("#jsonRequestButton").click(function(){
+        // Make AJAX request
+        $.ajax({
+            url: "https://api.the-odds-api.com/v4/sports/basketball_nba/events?apiKey=728f838e9ff2e31e7c4517ad1890e66f",
+            type: "GET",
+            dataType: "json",
+            success: function(response) {
+                // Handle successful response
+                console.log(response);
+                displayResponse(response);
+            },
+            error: function(xhr, status, error) {
+                // Handle errors
+                console.error(xhr.responseText);
+            }
+        });
+    });
+
+    function displayResponse(events) {
+        // Clear previous response
+        $("#responseContainer").empty();
+
+        // Check if events array exists and is not empty
+        if (events && events.length > 0) {
+            // Loop through each event in the response
+            events.forEach(function(event) {
+                // Create a new section to display event details
+                var eventSection = $("<section>");
+
+                // Add event details to the section
+                eventSection.append("<p>ID: " + event.id + "</p>");
+                eventSection.append("<p>Away Team: " + event.away_team + "</p>");
+                eventSection.append("<p>Home Team: " + event.home_team + "</p>");
+                eventSection.append("<p>Commence Time: " + event.commence_time + "</p>");
+
+                // Append the section to the response container
+                $("#responseContainer").append(eventSection);
+            });
+        } else {
+            // Display a message if there are no events
+            $("#responseContainer").html("<p>No events found.</p>");
+        }
+    }
+});
+</script>
+
+</body>
+</html>
